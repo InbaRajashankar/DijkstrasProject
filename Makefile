@@ -1,4 +1,4 @@
-FLAGS := -std=c++17 -Wall -Wextra
+FLAGS := -std=c++20 -Wall -Wextra
 
 pathFinder: pathFinder.o
 	g++ $(FLAGS) $^ -o pathFinder

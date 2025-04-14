@@ -39,12 +39,30 @@ void PathFinder::buildAdjList(const std::string& path) {
     // add node & edges to adj list
     adj_list[node_name] = edges;
   }
+
+  in_file.close();
+
+  // for (const auto& pair : adj_list) {
+  //   std::cout << pair.first << " ~ \n";
+  //   for (const auto& p : pair.second) {
+  //     std::cout << p.first << ' ' << p.second << '\n';
+  //   }
+  // }
 }
 
+void PathFinder::setRoot(const std::string& node_name) {
+  if (adj_list.empty())
+    throw std::runtime_error("buildAdjList must be called before root set!");
 
+  if (!adj_list.contains(node_name))
+    throw std::runtime_error("Invalid value to be set as root!");
+
+  root = node_name;
+}
 
 int main() {
   PathFinder p = PathFinder();
   p.buildAdjList("cities.txt");
+  p.setRoot("New_York");
   return 0;
 }
