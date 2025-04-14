@@ -48,12 +48,10 @@ void PathFinder::buildAdjList(const std::string& path) {
 
   in_file.close();
 
-  // for (const auto& pair : adj_list) {
-  //   std::cout << pair.first << " ~ \n";
-  //   for (const auto& p : pair.second) {
-  //     std::cout << p.first << ' ' << p.second << '\n';
-  //   }
-  // }
+  std::cout << "\nCITIES:\n";
+  for (const auto& pair : adj_list) {
+    std::cout << " - " << pair.first << "\n";
+  }
 }
 
 /**
@@ -171,15 +169,4 @@ void PathFinder::pathToNode(const std::string& dest) const {
     }
   }
   std::cout << std::endl;
-  
-}
-
-int main() {
-  PathFinder p = PathFinder();
-  p.buildAdjList("cities.txt");
-  p.setRoot("Los_Angeles");
-  p.runDijkstras();
-  p.pathToNode("Bangkok");
-  p.pathToNode("Sydney");
-  return 0;
 }
