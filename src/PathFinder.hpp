@@ -10,7 +10,7 @@ public:
   void buildAdjList(const std::string& path);
   void setRoot(const std::string& node_name);
   void runDijkstras(void);
-  int pathToNode(const std::string& node_name) const;
+  void pathToNode(const std::string& dest) const;
   
 private:
   std::unordered_map<std::string, std::vector<std::pair<std::string, int>>> adj_list;

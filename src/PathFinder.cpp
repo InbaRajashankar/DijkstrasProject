@@ -1,11 +1,17 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <queue>
+#include <stack>
 
 #include "PathFinder.hpp"
 
 /**
  * @brief reads the contents of the file in path as an adj. list
+ * 
+ * @param path string filepath
+ * 
+ * @author Inba
  */
 void PathFinder::buildAdjList(const std::string& path) {
   std::string buffer;
@@ -52,6 +58,10 @@ void PathFinder::buildAdjList(const std::string& path) {
 
 /**
  * @brief sets the root node to node_name
+ * 
+ * @param node_name string name of node to be set as root
+ * 
+ * @author Inba
  */
 void PathFinder::setRoot(const std::string& node_name) {
   if (adj_list.empty())
@@ -64,11 +74,14 @@ void PathFinder::setRoot(const std::string& node_name) {
 }
 
 /**
- * @brief run Dijkstra's algorithm to create a shortest-path tree, stored in dijkstra_tree
+ * @brief run Dijkstra's algorithm to create a shortest-path tree,
+ *        which is stored in dijkstra_tree
+ * 
+ * @author Inba
  */
 void PathFinder::runDijkstras(void) {
   if (root.empty())
-    throw std::runtime_error("setRoot must be called before root set!");
+    throw std::runtime_error("setRoot must be called before runDijkstra run!");
 
   // DIJKSTRA's
 
@@ -112,10 +125,61 @@ void PathFinder::runDijkstras(void) {
   for (const auto& p : adj_list) dijkstra_tree[p.first] = {dists[p.first], prevs[p.first]};
 }
 
+/**
+ * @brief return the shortest path from root to node
+ * 
+ * @param dest node to visit
+ * 
+ * @author Inba
+ */
+void PathFinder::pathToNode(const std::string& dest) const {
+  if (dijkstra_tree.empty()) 
+    throw std::runtime_error("runDijkstra must be called before path can be found!");
+
+  if (!adj_list.contains(dest))
+    throw std::runtime_error("Invalid value to visit!");
+
+  std::cout << "Path from " << root << " to " << dest << " found!\n";
+  std::cout << " - Cost: " << dijkstra_tree.at(dest).first << ".\n";
+  
+  std::stack<std::string> path;
+
+  std::string temp = dest;
+  while (temp != "\0") {
+    path.push(temp);
+    temp = dijkstra_tree.at(temp).second;
+  }
+
+  std::cout << " - Path: ";
+  std::string prev;
+  std::string cur;
+  while (!path.empty()) {
+    prev = path.top();
+    path.pop();
+    if (path.empty()) {
+      std::cout << prev << ".";
+    } else {
+      cur = path.top();
+
+      std::cout << prev << " -(";
+      for (const auto& p : adj_list.at(prev)) {
+        if (p.first == cur) {
+          std::cout << p.second;
+        }
+      }
+      std::cout << ")-> ";
+    }
+  }
+  std::cout << std::endl;
+  
+}
+
 int main() {
   PathFinder p = PathFinder();
   p.buildAdjList("cities.txt");
-  p.setRoot("London");
+  p.setRoot("Los_Angeles");
   p.runDijkstras();
+  p.pathToNode("Bangkok");
+  p.pathToNode("Sydney");
   return 0;
 }
