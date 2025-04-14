@@ -50,6 +50,9 @@ void PathFinder::buildAdjList(const std::string& path) {
   // }
 }
 
+/**
+ * @brief sets the root node to node_name
+ */
 void PathFinder::setRoot(const std::string& node_name) {
   if (adj_list.empty())
     throw std::runtime_error("buildAdjList must be called before root set!");
@@ -60,9 +63,59 @@ void PathFinder::setRoot(const std::string& node_name) {
   root = node_name;
 }
 
+/**
+ * @brief run Dijkstra's algorithm to create a shortest-path tree, stored in dijkstra_tree
+ */
+void PathFinder::runDijkstras(void) {
+  if (root.empty())
+    throw std::runtime_error("setRoot must be called before root set!");
+
+  // DIJKSTRA's
+
+  // Initialize hashmaps to store dists & previous nodes
+  std::unordered_map<std::string, int> dists;
+  std::unordered_map<std::string, std::string> prevs;
+  for (const auto& p : adj_list) {
+    dists[p.first] = p.first == root ? 0 : INT_MAX;
+    prevs[p.first] = "\0";
+  }
+
+  // priority queue based on cost to get to node
+  class NodeComp {
+    public:
+      bool operator()(const Node a, const Node b) {
+        return a.cost >= b.cost;
+      }
+    };
+  std::priority_queue <Node, std::vector<Node>, NodeComp> pq;
+  Node n = {root, 0, "\0"};
+  pq.push(n);
+
+  // Go through pq, examining nodes
+  while (!pq.empty()) {
+    Node temp = pq.top();
+    pq.pop();
+
+    // examine neigbours
+    for (const auto& p : adj_list[temp.val]) {
+      int alt = p.second + temp.cost;
+      if (alt < dists[p.first]) {
+        dists[p.first] = alt;
+        prevs[p.first] = temp.val;
+        Node neighbour = {p.first, p.second + temp.cost, temp.val};
+        pq.push(neighbour);
+      }
+    }
+  }
+
+  // populate distances
+  for (const auto& p : adj_list) dijkstra_tree[p.first] = {dists[p.first], prevs[p.first]};
+}
+
 int main() {
   PathFinder p = PathFinder();
   p.buildAdjList("cities.txt");
-  p.setRoot("New_York");
+  p.setRoot("London");
+  p.runDijkstras();
   return 0;
 }
